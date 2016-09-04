@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Slider</title>
+	<style>
+		#slider{
+			position: relative;
+			height: 200px;
+			width: 100%;
+			float: left;
+		}
+		.slide{
+			display: none;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	</style>
+</head>
+<body>
+	<ul id="slider">
+		<li class="slide" id="slide-0" data-index="0"><h1>slide 0</h1></li>
+		<li class="slide" id="slide-1" data-index="1"><h1>slide 1</h1></li>
+		<li class="slide" id="slide-2" data-index="2"><h1>slide 2</h1></li>
+		<li class="slide" id="slide-3" data-index="3"><h1>slide 3</h1></li>
+		<li class="slide" id="slide-4" data-index="4"><h1>slide 4</h1></li>
+		<li class="slide" id="slide-5" data-index="5"><h1>slide 5</h1></li>
+	</ul>
+	<div class="pagination">
+		<a href="#" class="to-slide" data-slide="0">0</a>
+		<a href="#" class="to-slide" data-slide="1">1</a>
+		<a href="#" class="to-slide" data-slide="2">2</a>
+		<a href="#" class="to-slide" data-slide="3">3</a>
+		<a href="#" class="to-slide" data-slide="4">4</a>
+		<a href="#" class="to-slide" data-slide="5">5</a>
+	</div>
+	<div class="controls">
+		<a href="#" class="to-slide" data-slide="prev">Anterior</a>
+		<a href="#" class="to-slide" data-slide="next">Siguiente</a>
+	</div>
+	<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+	<script>
+		$(document).ready(function() {
+			$('.to-slide').on("click", function(event){
+				event.preventDefault();
+				var slide = $(this).data("slide");
+				if(slide=="next" || slide=="prev"){
+					if(slide=="prev") Slider.prev();
+					else Slider.next();
+				}else{
+					Slider.goTo(slide);
+				}
+			});
+			Slider.init();
+		});
+
+		var Slider = {
+			canScroll: true,
+			items: [],
+			slideActive: 0,
+			duration: 600,
+			init: function(){
+				Slider.items = $('.slide');
+				var state = window.location.search ? window.location.search : 0; 
+				Slider.goTo(state);
+			},
+			prev: function(){
+				var index = Slider.slideActive-1;
+				console.log("index",index);
+				if(index<0){
+					Slider.goTo(Slider.items.length-1);
+				}else{
+					Slider.goTo(index);
+				}
+			},
+			next: function(){
+				var index = Slider.slideActive+1;
+				console.log("index",index);
+				if(index>=Slider.items.length){
+					Slider.goTo(0);
+				}else{
+					Slider.goTo(index);
+				}
+			},
+			goTo: function(index){
+				if(Slider.canScroll){
+					Slider.canScroll = false;
+					$('.slide').not("#slide-"+index).fadeOut();
+					$("#slide-"+index).fadeIn(Slider.duration, function(){
+						Slider.canScroll = true;
+						Slider.setStates(index);
+					});
+				}
+			},
+			setStates: function(index){
+				Slider.slideActive = index;
+				$('.slide').removeClass('next prev');
+				$("#slide-"+index).addClass('active');
+				$("#slide-"+(index-1)).addClass('prev');
+				$("#slide-"+(index+1)).addClass('next');
+			}
+		}
+	</script>
+</body>
+</html>
